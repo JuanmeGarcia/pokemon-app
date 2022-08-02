@@ -12,9 +12,6 @@ const origin = typeof window === 'undefined' ? '' : window.location.origin
 
 export const Layout: FC<Props> = ({ children, title = 'PokemonApp' }): JSX.Element => {
 
-  useEffect(()=>{
-    console.log(window.location.origin)
-  }, [])
 
   return (
     <>

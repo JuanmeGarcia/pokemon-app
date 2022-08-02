@@ -11,6 +11,10 @@ interface Props {
 }
 
 const PokemonPage: NextPage<Props> = ({ pokemon }) => {
+
+
+
+
     const [isInFavourites, setIsInFavourites] = useState<any>()
 
     useEffect(()=>{
@@ -147,7 +151,7 @@ const PokemonPage: NextPage<Props> = ({ pokemon }) => {
     )
 }
 
-
+//dinamic routing
 export const getStaticPaths: GetStaticPaths = async (ctx) => {
 
     const pokemons = [...Array(649)].map((_, index) => (
@@ -158,7 +162,7 @@ export const getStaticPaths: GetStaticPaths = async (ctx) => {
         paths: pokemons.map(id => ({
             params: { id }
         })),
-        fallback: false
+        fallback: 'blocking'
     }
 }
 
@@ -166,10 +170,23 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 
     const { id } = params as { id: string }
 
+    const pokemon =  await getPokemonInfo(id)
+
+
+    //incremental static generation :D
+    if(!pokemon){
+        return {
+            redirect: {
+                destination: '/',
+                permanent: false
+            }
+        }
+    }
     return {
         props: {
-            pokemon: await getPokemonInfo(id)
-        }
+            pokemon
+        },
+        revalidate: 86400,
     }
 }
 

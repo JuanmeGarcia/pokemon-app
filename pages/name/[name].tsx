@@ -13,7 +13,6 @@ interface Props {
 
 const PokemonByName: NextPage<Props> = ({ pokemon }) => {
 
-    console.log(pokemon);
     
 
     const [isInFavourites, setIsInFavourites] = useState(
@@ -149,34 +148,40 @@ const PokemonByName: NextPage<Props> = ({ pokemon }) => {
     )
 }
 
-
-
 export const getStaticPaths: GetStaticPaths = async (ctx) => {
     
-    const { data }  = await pokeApi.get<PokemonList>('/pokemon?limit=649')
-
-    const pokemons = data.results.map(pokemon =>(
-        pokemon.name
-    ))
-
-    return {
-        paths: pokemons.map(name => ({ 
-            params: { name }
-        })),
-        fallback: false
-    }
+        const { data }  = await pokeApi.get<PokemonList>('/pokemon?limit=649')
+        const pokemons = data.results.map(pokemon =>(
+            pokemon.name
+        ))
+    
+        return {
+            paths: pokemons.map(name => ({ 
+                params: { name }
+            })),
+            fallback: 'blocking',
+        }
 }
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
 
     const { name } = params as { name: string }
 
-    console.log(name);
+    const pokemon = await getPokemonInfo(name)
 
+    if(!pokemon){
+        return {
+            redirect: {
+                destination: '/',
+                permanent: false
+            }
+        }
+    }
     return {
         props: {
-            pokemon: await getPokemonInfo(name)
-        }
+            pokemon
+        },
+        revalidate: 86400,
     }
 }
 

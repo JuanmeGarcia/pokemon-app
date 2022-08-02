@@ -13,7 +13,6 @@ interface Props {
 
 const Home: NextPage<Props> = ({ pokemons }) => {
 
-  console.log(pokemons);
 
   const renderPokemons = pokemons.map(pokemon =>(
     <PokemonCard 
